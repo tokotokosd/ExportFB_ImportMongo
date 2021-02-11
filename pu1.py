@@ -7,7 +7,7 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 
-def get_data_from_firebase(filename='driven-era-285922-990de40007ab.json'):
+def get_data_from_firebase(filename=config['FireBase']['FirebaseJson']):
     # Use a service account
     cred = credentials.Certificate(filename)
     firebase_admin.initialize_app(cred)
