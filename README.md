@@ -1,5 +1,5 @@
-#Export fb Import mongo
-###requirements
+# Export fb Import mongo
+### requirements
 pip install firebase_admin pymongo
-###config
+### config
 change config in config.ini
