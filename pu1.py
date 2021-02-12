@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import configparser
+from pymongo import MongoClient
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -31,4 +32,31 @@ def get_data_from_firebase(filename=config['FireBase']['FirebaseJson']):
     return final
 
 
-print(get_data_from_firebase())
+def import_to_mongo():
+    # connect to MongoDB
+    client = MongoClient(config['MongoDB']['URL'])
+    db = client[config['MongoDB']['DB_Name']]
+    # get import data
+    import_data = get_data_from_firebase()
+
+    need_to_imp = len(list(import_data.values()))
+    x = 1
+    for collection in import_data.keys():
+        collection_imp = []
+        for doc in import_data[collection]:
+            # create id
+            a = {'_id': list(doc.keys())[0]}
+            # create other parameters
+            b = doc[list(doc.keys())[0]]
+            tmp_dic = {**a, **b}
+            collection_imp.append(tmp_dic)
+
+        # insert all from collection
+        db[collection].insert_many(collection_imp)
+
+        print('Created {0} of {1} '.format(x, need_to_imp))
+        x += 1
+
+
+if __name__ == '__main__':
+    import_to_mongo()
